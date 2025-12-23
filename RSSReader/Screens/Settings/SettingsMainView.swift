@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Settings Main View
-
 /// Главный экран настроек приложения
 struct SettingsMainView: View {
     
@@ -98,8 +96,6 @@ struct SettingsMainView: View {
         }
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     NavigationStack {

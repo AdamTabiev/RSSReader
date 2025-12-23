@@ -9,36 +9,27 @@ import Foundation
 import SwiftUI
 import Combine
 
-// MARK: - Sources List ViewModel
-
 /// ViewModel для управления списком источников RSS
 final class SourcesListViewModel: ObservableObject {
-    
-    // MARK: - Published Properties
-    
+        
     /// Список всех источников
     @Published var sources: [RSSSource] = []
     /// Состояние загрузки (при валидации нового источника)
     @Published var isLoading: Bool = false
     /// Сообщение об ошибке
     @Published var errorMessage: String?
-    
-    // MARK: - Dependencies
-    
+        
     private let realmService: RealmService
     private let networkService: NetworkService
     
-    // MARK: - Init
-    
+        
     init(realmService: RealmService = RealmService(),
          networkService: NetworkService = NetworkService()) {
         self.realmService = realmService
         self.networkService = networkService
         loadSources()
     }
-    
-    // MARK: - Public Methods
-    
+        
     /// Загрузить источники из базы
     func loadSources() {
         sources = realmService.getAllSources()

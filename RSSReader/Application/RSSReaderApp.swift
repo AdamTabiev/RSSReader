@@ -12,11 +12,13 @@ struct RSSReaderApp: App {
     
     /// Управляет навигацией между экранами
     @StateObject private var appRouter = AppRouter()
+    
     /// Таймер автообновления новостей
     @StateObject private var timerService = TimerService()
     
     /// Работа с локальной базой Realm (новости, источники)
     private let realmService = RealmService()
+    
     /// Синхронизация новостей из RSS-лент
     private let syncService = NewsSyncService()
     
@@ -30,7 +32,7 @@ struct RSSReaderApp: App {
                 }
         }
     }
-        
+    
     /// Связывает таймер с сервисом синхронизации (размещён здесь как точка инициализации)
     private func setupTimer() {
         timerService.onTimerTick = {

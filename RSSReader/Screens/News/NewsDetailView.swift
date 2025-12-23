@@ -8,8 +8,6 @@
 import SwiftUI
 import WebKit
 
-// MARK: - News Detail View
-
 /// Экран детального просмотра новости через WebView
 /// Открывает оригинальную статью по ссылке из RSS
 struct NewsDetailView: View {

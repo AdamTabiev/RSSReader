@@ -8,8 +8,6 @@
 import Foundation
 import RealmSwift
 
-// MARK: - RSS Source
-
 /// Модель источника новостей (например, РБК или Ведомости)
 /// Позволяет хранить URL ленты и статус активности источника
 final class RSSSource: Object, Identifiable {
@@ -36,4 +34,5 @@ final class RSSSource: Object, Identifiable {
         self.name = name
         self.url = url
     }
+    
 }

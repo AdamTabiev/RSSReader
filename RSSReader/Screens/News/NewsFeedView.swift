@@ -130,8 +130,6 @@ struct NewsFeedView: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NewsFeedView()
         .environmentObject(AppRouter())

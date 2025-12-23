@@ -24,11 +24,9 @@ struct RootView: View {
                 NewsFeedView()
             }
         }
-        .preferredColorScheme(.light) // Принудительная светлая тема
     }
+    
 }
-
-// MARK: - Previews
 
 #Preview {
     RootView()

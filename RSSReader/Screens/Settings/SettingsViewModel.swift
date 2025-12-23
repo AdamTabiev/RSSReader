@@ -9,13 +9,9 @@ import Foundation
 import SwiftUI
 import Combine
 
-// MARK: - Settings ViewModel
-
 /// ViewModel для управления настройками приложения
 final class SettingsViewModel: ObservableObject {
-    
-    // MARK: - Published Properties
-    
+        
     /// Частота обновления в минутах (сохраняется в UserDefaults)
     @Published var refreshInterval: Int {
         didSet {
@@ -25,13 +21,9 @@ final class SettingsViewModel: ObservableObject {
     
     /// Состояние очистки кэша
     @Published var cacheSize: String = "0 MB"
-    
-    // MARK: - Dependencies
-    
+        
     private let realmService: RealmService
-    
-    // MARK: - Init
-    
+        
     init(realmService: RealmService = RealmService()) {
         self.realmService = realmService
         // Загружаем интервал из настроек (по умолчанию 30 мин)
@@ -40,9 +32,7 @@ final class SettingsViewModel: ObservableObject {
         
         updateCacheSize()
     }
-    
-    // MARK: - Public Methods
-    
+        
     /// Обновить информацию о размере кэша
     func updateCacheSize() {
         cacheSize = ImageCacheService.shared.cacheSize()

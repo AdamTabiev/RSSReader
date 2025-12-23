@@ -12,16 +12,17 @@ import SwiftUI
 /// Ячейка источника в списке источников
 struct SourceRowView: View {
     
-    let source: RSSSource
-    let onToggle: (Bool) -> Void
+    let name: String
+    let url: String
+    @Binding var isEnabled: Bool
     
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text(source.name)
+                Text(name)
                     .font(.system(size: 17, weight: .medium))
                 
-                Text(source.url)
+                Text(url)
                     .font(.system(size: 13))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -29,22 +30,20 @@ struct SourceRowView: View {
             
             Spacer()
             
-            Toggle("", isOn: Binding(
-                get: { source.isEnabled },
-                set: { onToggle($0) }
-            ))
-            .labelsHidden()
-            .tint(.blue)
+            Toggle("", isOn: $isEnabled)
+                .labelsHidden()
+                .tint(.blue)
         }
         .padding(.vertical, 4)
     }
 }
 
-// MARK: - Previews
-
 #Preview {
-    let source = RSSSource(name: "Ведомости", url: "https://vedomosti.ru/rss")
-    return List {
-        SourceRowView(source: source, onToggle: { _ in })
+    List {
+        SourceRowView(
+            name: "Ведомости",
+            url: "https://vedomosti.ru/rss",
+            isEnabled: .constant(true)
+        )
     }
 }

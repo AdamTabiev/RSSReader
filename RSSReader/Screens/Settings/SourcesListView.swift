@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Sources List View
-
 /// Экран управления источниками RSS
 struct SourcesListView: View {
     
@@ -22,9 +20,14 @@ struct SourcesListView: View {
     var body: some View {
         List {
             ForEach(viewModel.sources) { source in
-                SourceRowView(source: source) { _ in
-                    viewModel.toggleSource(source)
-                }
+                SourceRowView(
+                    name: source.name,
+                    url: source.url,
+                    isEnabled: Binding(
+                        get: { source.isEnabled },
+                        set: { _ in viewModel.toggleSource(source) }
+                    )
+                )
             }
             .onDelete(perform: viewModel.deleteSource)
         }

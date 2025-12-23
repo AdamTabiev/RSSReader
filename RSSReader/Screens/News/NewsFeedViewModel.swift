@@ -9,22 +9,16 @@ import Foundation
 import SwiftUI
 import Combine
 
-// MARK: - Display Mode
-
 /// Режим отображения новостей
 enum DisplayMode: String, CaseIterable {
     case regular
     case extended
 }
 
-// MARK: - News Feed ViewModel
-
 /// ViewModel для управления состоянием ленты новостей
 /// Отвечает за координацию между базой данных, сетью и парсером
 final class NewsFeedViewModel: ObservableObject {
-    
-    // MARK: - Published Properties
-    
+        
     /// Список новостей для отображения
     @Published var news: [NewsItem] = []
     /// Состояние загрузки данных из сети
@@ -38,20 +32,15 @@ final class NewsFeedViewModel: ObservableObject {
     
     private let realmService: RealmService
     private let syncService: NewsSyncService
-    
-    // MARK: - Init
-    
-    init(realmService: RealmService = RealmService(),
-         syncService: NewsSyncService = NewsSyncService()) {
+        
+    init(realmService: RealmService = RealmService(), syncService: NewsSyncService = NewsSyncService()) {
         self.realmService = realmService
         self.syncService = syncService
         
         // Загружаем новости из базы данных
         loadFromDatabase()
     }
-    
-    // MARK: - Public Methods
-    
+        
     /// Загрузить новости из базы данных
     func loadFromDatabase() {
         news = realmService.getAllNews()

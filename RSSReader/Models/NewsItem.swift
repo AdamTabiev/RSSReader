@@ -8,8 +8,6 @@
 import Foundation
 import RealmSwift
 
-// MARK: - News Item
-
 /// Модель отдельной новости
 /// Хранится в Realm и отображается в ленте новостей
 final class NewsItem: Object, Identifiable {
@@ -57,4 +55,5 @@ final class NewsItem: Object, Identifiable {
         self.pubDate = pubDate
         self.sourceName = sourceName
     }
+    
 }
