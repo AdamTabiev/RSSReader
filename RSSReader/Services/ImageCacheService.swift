@@ -18,8 +18,10 @@ final class ImageCacheService {
     
     /// Менеджер файлов для работы с дисковым кэшем
     private let fileManager = FileManager.default
+    
     /// Путь к директории кэша на диске
     private let cacheDirectory: URL
+    
     /// Кэш в оперативной памяти для быстрого доступа
     private let memoryCache = NSCache<NSString, UIImage>()
         

@@ -12,10 +12,8 @@ import RealmSwift
 /// Обеспечивает сохранение, загрузку и удаление новостей и источников RSS
 final class RealmService {
     
-    /// Экземпляр базы данных Realm
     private var realm: Realm?
         
-    /// Инициализация сервиса и создание предустановленных источников RSS
     init() {
         do {
             realm = try Realm()

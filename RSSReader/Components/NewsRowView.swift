@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - News Row View
-
 /// Ячейка отдельной новости в общем списке
 /// Поддерживает два режима отображения данных (обычный и подробный)
 struct NewsRowView: View {
@@ -56,27 +54,11 @@ struct NewsRowView: View {
                         .padding(.top, 2)
                 }
                 
-                // Дата
-                Text(formattedDate)
-                    .font(.system(size: 11))
-                    .foregroundStyle(.tertiary)
-                    .padding(.top, 2)
             }
         }
         .padding(.vertical, 8)
     }
-    
-    // MARK: - Helpers
-    
-    private var formattedDate: String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.locale = Locale(identifier: "ru_RU")
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: newsItem.pubDate, relativeTo: Date())
-    }
 }
-
-// MARK: - Previews
 
 #Preview("Regular") {
     let item = NewsItem(

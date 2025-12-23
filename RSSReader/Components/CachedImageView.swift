@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Cached Image View
-
 /// Компонент для отображения изображений с поддержкой кэширования
 /// Сначала проверяет наличие картинки в локальном кэше, затем загружает из сети
 struct CachedImageView: View {
@@ -75,8 +73,6 @@ struct CachedImageView: View {
         }
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     VStack {

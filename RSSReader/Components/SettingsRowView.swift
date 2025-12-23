@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Settings Row View
-
 /// Ячейка в меню настроек
 struct SettingsRowView: View {
     
@@ -47,10 +45,9 @@ struct SettingsRowView: View {
                 .foregroundStyle(.tertiary)
         }
         .padding(.vertical, 4)
+        .contentShape(Rectangle())
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     List {

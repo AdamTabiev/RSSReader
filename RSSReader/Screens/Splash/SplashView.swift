@@ -7,29 +7,19 @@
 
 import SwiftUI
 
-// MARK: - Splash View
-
-/// Splash экран приложения
-/// Показывается при запуске на 2 секунды с логотипом и индикатором загрузки
 struct SplashView: View {
     
     @EnvironmentObject private var appRouter: AppRouter
     
-    // MARK: - State
-    
     @State private var showProgress: Bool = false
     @State private var logoScale: CGFloat = 0.5
     @State private var logoOpacity: Double = 0.0
-    
-    // MARK: - Body
-    
+        
     var body: some View {
         ZStack {
-            // Фон
             Color.white
                 .ignoresSafeArea()
             
-            // Логотип в центре
             VStack {
                 Spacer()
                 logoView
@@ -95,19 +85,13 @@ struct SplashView: View {
         Task {
             try? await Task.sleep(nanoseconds: 2_000_000_000)
             await MainActor.run {
-                navigateToNews()
+                withAnimation {
+                    appRouter.currentScreen = .news
+                }
             }
         }
     }
-    
-    private func navigateToNews() {
-        withAnimation {
-            appRouter.currentScreen = .news
-        }
-    }
 }
-
-// MARK: - Previews
 
 #Preview {
     SplashView()

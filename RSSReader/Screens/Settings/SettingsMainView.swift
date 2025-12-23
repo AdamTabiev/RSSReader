@@ -17,13 +17,14 @@ struct SettingsMainView: View {
     
     /// Состояние для выбора интервала
     @State private var showIntervalPicker = false
+    
     /// Состояние для подтверждения очистки кэша
     @State private var showClearCacheAlert = false
     
     var body: some View {
         List {
             // Раздел управления контентом
-            Section(header: Text("Контент")) {
+            Section("Контент") {
                 Button {
                     appRouter.newsRoute.append(.sources)
                 } label: {
@@ -49,7 +50,7 @@ struct SettingsMainView: View {
             }
             
             // Раздел памяти
-            Section(header: Text("Память")) {
+            Section("Память") {
                 Button {
                     showClearCacheAlert = true
                 } label: {
@@ -64,7 +65,7 @@ struct SettingsMainView: View {
             }
             
             // Информация
-            Section(header: Text("О приложении")) {
+            Section("О приложении") {
                 HStack {
                     Text("Версия")
                     Spacer()
