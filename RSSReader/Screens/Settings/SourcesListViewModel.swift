@@ -24,7 +24,7 @@ final class SourcesListViewModel: ObservableObject {
     
         
     init(realmService: RealmService = RealmService(),
-         networkService: NetworkService = NetworkService()) {
+         networkService: NetworkService = NetworkService.shared) {
         self.realmService = realmService
         self.networkService = networkService
         loadSources()

@@ -18,7 +18,7 @@ final class NewsSyncService {
     
     
     init(realmService: RealmService = RealmService(),
-         networkService: NetworkService = NetworkService(),
+         networkService: NetworkService = NetworkService.shared,
          parserService: RSSParserService = RSSParserService()) {
         self.realmService = realmService
         self.networkService = networkService
