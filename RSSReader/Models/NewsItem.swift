@@ -57,3 +57,35 @@ final class NewsItem: Object, Identifiable {
     }
     
 }
+
+// MARK: - Domain Mapping
+
+extension NewsItem {
+    /// Конвертация Realm модели → Domain модель
+    func toDomainModel() -> NewsArticle {
+        NewsArticle(
+            id: self.id,
+            title: self.title,
+            description: self.descriptionText,
+            imageURL: self.imageURL,
+            link: self.link,
+            pubDate: self.pubDate,
+            sourceName: self.sourceName,
+            isRead: self.isRead
+        )
+    }
+    
+    /// Конвертация Domain модели → Realm модель
+    static func fromDomain(_ article: NewsArticle) -> NewsItem {
+        NewsItem(
+            id: article.id,
+            title: article.title,
+            descriptionText: article.description,
+            imageURL: article.imageURL,
+            link: article.link,
+            pubDate: article.pubDate,
+            sourceName: article.sourceName
+        )
+    }
+}
+

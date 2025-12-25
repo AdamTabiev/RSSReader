@@ -10,44 +10,62 @@ import SwiftUI
 import Combine
 
 /// ViewModel для управления списком источников RSS
+/// Работает через Use Cases для изоляции бизнес-логики
 final class SourcesListViewModel: ObservableObject {
         
     /// Список всех источников
-    @Published var sources: [RSSSource] = []
+    @Published var sources: [FeedSource] = []
     /// Состояние загрузки (при валидации нового источника)
     @Published var isLoading: Bool = false
     /// Сообщение об ошибке
     @Published var errorMessage: String?
         
-    private let realmService: RealmService
-    private let networkService: NetworkService
-    
+    private let sourcesRepository: SourcesRepositoryProtocol
+    private let addSourceUseCase: AddSourceUseCase
+    private let toggleSourceUseCase: ToggleSourceUseCase
+    private let deleteSourceUseCase: DeleteSourceUseCase
         
-    init(realmService: RealmService = RealmService(),
-         networkService: NetworkService = NetworkService.shared) {
-        self.realmService = realmService
-        self.networkService = networkService
-        loadSources()
+    init(
+        sourcesRepository: SourcesRepositoryProtocol,
+        addSourceUseCase: AddSourceUseCase,
+        toggleSourceUseCase: ToggleSourceUseCase,
+        deleteSourceUseCase: DeleteSourceUseCase
+    ) {
+        self.sourcesRepository = sourcesRepository
+        self.addSourceUseCase = addSourceUseCase
+        self.toggleSourceUseCase = toggleSourceUseCase
+        self.deleteSourceUseCase = deleteSourceUseCase
+        
+        Task {
+            await loadSources()
+        }
     }
         
     /// Загрузить источники из базы
-    func loadSources() {
-        sources = realmService.getAllSources()
+    func loadSources() async {
+        let allSources = await sourcesRepository.getAllSources()
+        await MainActor.run {
+            self.sources = allSources
+        }
     }
     
     /// Переключить активность источника
-    func toggleSource(_ source: RSSSource) {
-        realmService.toggleSource(source.id, isEnabled: !source.isEnabled)
-        loadSources()
+    func toggleSource(_ source: FeedSource) {
+        Task {
+            try? await toggleSourceUseCase.execute(sourceId: source.id, isEnabled: !source.isEnabled)
+            await loadSources()
+        }
     }
     
     /// Удалить источник
     func deleteSource(at offsets: IndexSet) {
-        offsets.forEach { index in
-            let source = sources[index]
-            realmService.deleteSource(source.id)
+        Task {
+            for index in offsets {
+                let source = sources[index]
+                try? await deleteSourceUseCase.execute(sourceId: source.id)
+            }
+            await loadSources()
         }
-        loadSources()
     }
     
     /// Добавить новый источник после валидации
@@ -57,19 +75,16 @@ final class SourcesListViewModel: ObservableObject {
             errorMessage = nil
         }
         
-        let isValid = await networkService.validateRSSURL(url)
-        
-        if isValid {
-            let newSource = RSSSource(name: name, url: url)
-            realmService.addSource(newSource)
+        do {
+            try await addSourceUseCase.execute(name: name, url: url)
+            await loadSources()
             await MainActor.run {
-                loadSources()
                 isLoading = false
             }
             return true
-        } else {
+        } catch {
             await MainActor.run {
-                errorMessage = "Неверный URL или не является RSS-лентой"
+                errorMessage = error.localizedDescription
                 isLoading = false
             }
             return false

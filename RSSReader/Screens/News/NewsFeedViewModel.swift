@@ -16,11 +16,11 @@ enum DisplayMode: String, CaseIterable {
 }
 
 /// ViewModel для управления состоянием ленты новостей
-/// Отвечает за координацию между базой данных, сетью и парсером
+/// Работает через Use Cases для изоляции бизнес-логики
 final class NewsFeedViewModel: ObservableObject {
         
     /// Список новостей для отображения
-    @Published var news: [NewsItem] = []
+    @Published var news: [NewsArticle] = []
     /// Состояние загрузки данных из сети
     @Published var isLoading: Bool = false
     /// Текущий режим отображения (обычный/расширенный)
@@ -30,41 +30,59 @@ final class NewsFeedViewModel: ObservableObject {
     
     // MARK: - Dependencies
     
-    private let realmService: RealmService
-    private let syncService: NewsSyncService
+    private let fetchNewsUseCase: FetchNewsUseCase
+    private let markAsReadUseCase: MarkNewsAsReadUseCase
+    private let newsRepository: NewsRepositoryProtocol
         
-    init(realmService: RealmService = RealmService(), syncService: NewsSyncService = NewsSyncService()) {
-        self.realmService = realmService
-        self.syncService = syncService
+    init(
+        fetchNewsUseCase: FetchNewsUseCase,
+        markAsReadUseCase: MarkNewsAsReadUseCase,
+        newsRepository: NewsRepositoryProtocol
+    ) {
+        self.fetchNewsUseCase = fetchNewsUseCase
+        self.markAsReadUseCase = markAsReadUseCase
+        self.newsRepository = newsRepository
         
-        // Загружаем новости из базы данных
-        loadFromDatabase()
+        Task {
+            await loadFromDatabase()
+        }
     }
         
     /// Загрузить новости из базы данных
-    func loadFromDatabase() {
-        news = realmService.getAllNews()
+    func loadFromDatabase() async {
+        let articles = await newsRepository.getAllNews()
+        await MainActor.run {
+            self.news = articles
+        }
     }
     
-    /// Загрузить новости из сети
+    /// Загрузить новости из сети (с параллельной загрузкой источников)
     func refreshNews() async {
         await MainActor.run {
             isLoading = true
             errorMessage = nil
         }
         
-        await syncService.syncAllSources()
+        do {
+            _ = try await fetchNewsUseCase.execute()
+            await loadFromDatabase()
+        } catch {
+            await MainActor.run {
+                errorMessage = error.localizedDescription
+            }
+        }
         
         await MainActor.run {
-            loadFromDatabase()
             isLoading = false
         }
     }
     
     /// Пометить новость как прочитанную
-    func markAsRead(_ newsItem: NewsItem) {
-        realmService.markAsRead(newsItem.id)
-        loadFromDatabase()
+    func markAsRead(_ article: NewsArticle) {
+        Task {
+            try? await markAsReadUseCase.execute(newsId: article.id)
+            await loadFromDatabase()
+        }
     }
     
     /// Переключить режим отображения

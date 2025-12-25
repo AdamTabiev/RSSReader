@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Settings Button View
-
 /// Кнопка перехода к экрану настроек
 struct SettingsButtonView: View {
     
@@ -22,8 +20,6 @@ struct SettingsButtonView: View {
         }
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     SettingsButtonView(action: {})

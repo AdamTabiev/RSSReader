@@ -1,5 +1,5 @@
 //
-//  NewsFeedView.swift
+//  NewsFeedMainView.swift
 //  RSSReader
 //
 //  Created by Адам Табиев on 18.12.2025.
@@ -10,10 +10,18 @@ import SwiftUI
 // MARK: - News Feed View
 
 /// Главный экран с лентой новостей
-struct NewsFeedView: View {
+struct NewsFeedMainView: View {
     
     @EnvironmentObject private var appRouter: AppRouter
-    @StateObject private var viewModel = NewsFeedViewModel()
+    @StateObject private var viewModel: NewsFeedViewModel
+    
+    /// Контейнер зависимостей для создания ViewModel'ов при навигации
+    private let container: DependencyContainer
+    
+    init(viewModel: NewsFeedViewModel, container: DependencyContainer) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+        self.container = container
+    }
     
     var body: some View {
         NavigationStack(path: $appRouter.newsRoute) {
@@ -46,15 +54,11 @@ struct NewsFeedView: View {
                 case .detail(let url):
                     NewsDetailView(urlString: url)
                 case .settings:
-                    SettingsMainView()
+                    SettingsMainView(viewModel: container.makeSettingsViewModel())
                 case .sources:
-                    SourcesListView()
+                    SourcesListView(viewModel: container.makeSourcesListViewModel())
                 }
             }
-        }
-        .onAppear {
-            // Актуализация данных при возврате с других экранов
-            viewModel.loadFromDatabase()
         }
         .task {
             // Загрузка новостей при первом появлении
@@ -131,6 +135,10 @@ struct NewsFeedView: View {
 }
 
 #Preview {
-    NewsFeedView()
-        .environmentObject(AppRouter())
+    let container = DependencyContainer()
+    NewsFeedMainView(
+        viewModel: container.makeNewsFeedViewModel(),
+        container: container
+    )
+    .environmentObject(AppRouter())
 }

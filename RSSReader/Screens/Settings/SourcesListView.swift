@@ -10,12 +10,16 @@ import SwiftUI
 /// Экран управления источниками RSS
 struct SourcesListView: View {
     
-    @StateObject private var viewModel = SourcesListViewModel()
+    @StateObject private var viewModel: SourcesListViewModel
     
     /// Состояние для формы добавления
     @State private var showingAddSource = false
     @State private var newSourceName = ""
     @State private var newSourceURL = ""
+    
+    init(viewModel: SourcesListViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
@@ -98,6 +102,6 @@ struct SourcesListView: View {
 
 #Preview {
     NavigationStack {
-        SourcesListView()
+        SourcesListView(viewModel: DependencyContainer().makeSourcesListViewModel())
     }
 }

@@ -10,6 +10,9 @@ import SwiftUI
 @main
 struct RSSReaderApp: App {
     
+    /// Контейнер зависимостей (Composition Root)
+    private let container = DependencyContainer()
+    
     /// Управляет навигацией между экранами
     @StateObject private var appRouter = AppRouter()
     
@@ -24,7 +27,7 @@ struct RSSReaderApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootView(container: container)
                 .environmentObject(appRouter)
                 .environmentObject(timerService)
                 .onAppear {

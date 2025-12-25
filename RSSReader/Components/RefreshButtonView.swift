@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Refresh Button View
-
 /// Кнопка обновления ленты новостей
 struct RefreshButtonView: View {
     
@@ -30,8 +28,6 @@ struct RefreshButtonView: View {
         .disabled(isLoading)
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     HStack {

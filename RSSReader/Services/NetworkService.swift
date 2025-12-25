@@ -54,15 +54,13 @@ enum NetworkError: Error, LocalizedError {
 
 /// Сервис для выполнения HTTP-запросов
 /// Поддерживает retry-логику, кэширование, детальные ошибки
-final class NetworkService {
-    
-    static let shared = NetworkService()
+final class NetworkService: NetworkServiceProtocol {
     
     /// Настроен с таймаутами и HTTP кэшем
     private let session: URLSession
     
     /// Количество повторных попыток при ошибке
-    private let maxRetries = 3
+    private let maxRetries: Int
     
     /// Задержка между повторными попытками (в секундах)
     private let retryDelay: UInt64 = 1_000_000_000
@@ -71,7 +69,8 @@ final class NetworkService {
     /// - Таймаутами (30/60 сек)
     /// - HTTP кэшем (20 MB в памяти, 100 MB на диске)
     /// - Политикой кэширования
-    private init() {
+    init(maxRetries: Int = 3) {
+        self.maxRetries = maxRetries
         // Создаём конфигурацию URLSession
         let config = URLSessionConfiguration.default
         
@@ -110,7 +109,7 @@ final class NetworkService {
         // Пытаемся загрузить данные до maxRetries раз
         for attempt in 0..<maxRetries {
             #if DEBUG
-            print("📡 NetworkService: Attempt \(attempt + 1)/\(maxRetries) for \(urlString)")
+            print("NetworkService: Attempt \(attempt + 1)/\(maxRetries) for \(urlString)")
             #endif
             
             do {
@@ -118,7 +117,7 @@ final class NetworkService {
                 let data = try await fetchDataSingleAttempt(from: urlString)
                 
                 #if DEBUG
-                print("✅ NetworkService: Success on attempt \(attempt + 1)")
+                print("NetworkService: Success on attempt \(attempt + 1)")
                 #endif
                 
                 return data
@@ -126,13 +125,13 @@ final class NetworkService {
                 lastError = error
                 
                 #if DEBUG
-                print("⚠️ NetworkService: Failed attempt \(attempt + 1): \(error)")
+                print("NetworkService: Failed attempt \(attempt + 1): \(error)")
                 #endif
                 
                 // Если это не последняя попытка - ждём перед retry
                 if attempt < maxRetries - 1 {
                     #if DEBUG
-                    print("⏱️ NetworkService: Retrying in 1 sec...")
+                    print("NetworkService: Retrying in 1 sec...")
                     #endif
                     
                     try? await Task.sleep(nanoseconds: retryDelay)
@@ -142,7 +141,7 @@ final class NetworkService {
         
         // Все попытки исчерпаны - выбрасываем последнюю ошибку
         #if DEBUG
-        print("❌ NetworkService: All attempts failed for \(urlString)")
+        print("NetworkService: All attempts failed for \(urlString)")
         #endif
         
         throw lastError ?? NetworkError.networkError(NSError(domain: "Unknown", code: -1))
@@ -150,15 +149,11 @@ final class NetworkService {
     
     /// Одна попытка загрузки данных (без retry)
     /// Приватный метод, используется внутри fetchData с retry-логикой
-    ///
-    /// - Parameter urlString: URL для загрузки
-    /// - Returns: Загруженные данные
-    /// - Throws: NetworkError при любой ошибке
     private func fetchDataSingleAttempt(from urlString: String) async throws -> Data {
         // Проверяем валидность URL
         guard let url = URL(string: urlString) else {
             #if DEBUG
-            print("❌ NetworkService: Invalid URL - \(urlString)")
+            print("NetworkService: Invalid URL - \(urlString)")
             #endif
             throw NetworkError.invalidURL
         }
@@ -173,7 +168,7 @@ final class NetworkService {
             }
             
             #if DEBUG
-            print("📊 NetworkService: HTTP \(httpResponse.statusCode) from \(urlString)")
+            print("NetworkService: HTTP \(httpResponse.statusCode) from \(urlString)")
             #endif
             
             // Обрабатываем разные статус коды детально
@@ -209,7 +204,7 @@ final class NetworkService {
         } catch {
             // Любая другая ошибка (сеть, таймаут и т.д.)
             #if DEBUG
-            print("❌ NetworkService: Network error - \(error.localizedDescription)")
+            print("NetworkService: Network error - \(error.localizedDescription)")
             #endif
             throw NetworkError.networkError(error)
         }
@@ -221,9 +216,9 @@ final class NetworkService {
     ///
     /// - Parameter urlString: URL для проверки
     /// - Returns: true если это RSS/Atom фид, false в противном случае
-    func validateRSSURL(_ urlString: String) async -> Bool {
+    func isValidRSSFeed(urlString: String) async -> Bool {
         #if DEBUG
-        print("🔍 NetworkService: Validating RSS URL - \(urlString)")
+        print("NetworkService: Validating RSS URL - \(urlString)")
         #endif
         
         do {
@@ -240,9 +235,9 @@ final class NetworkService {
             
             #if DEBUG
             if delegate.isValidRSS {
-                print("✅ NetworkService: Valid RSS/Atom feed")
+                print("NetworkService: Valid RSS/Atom feed")
             } else {
-                print("❌ NetworkService: Not a valid RSS/Atom feed")
+                print("NetworkService: Not a valid RSS/Atom feed")
             }
             #endif
             
@@ -250,7 +245,7 @@ final class NetworkService {
             
         } catch {
             #if DEBUG
-            print("❌ NetworkService: Validation failed - \(error)")
+            print("NetworkService: Validation failed - \(error)")
             #endif
             return false
         }

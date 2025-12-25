@@ -15,13 +15,19 @@ struct RootView: View {
     
     @EnvironmentObject private var appRouter: AppRouter
     
+    /// Контейнер зависимостей для создания ViewModel'ов
+    let container: DependencyContainer
+    
     var body: some View {
         Group {
             switch appRouter.currentScreen {
             case .splash:
                 SplashView()
             case .news:
-                NewsFeedView()
+                NewsFeedMainView(
+                    viewModel: container.makeNewsFeedViewModel(),
+                    container: container
+                )
             }
         }
     }
@@ -29,6 +35,6 @@ struct RootView: View {
 }
 
 #Preview {
-    RootView()
+    RootView(container: DependencyContainer())
         .environmentObject(AppRouter())
 }

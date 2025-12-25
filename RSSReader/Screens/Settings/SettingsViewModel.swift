@@ -12,23 +12,22 @@ import Combine
 /// ViewModel для управления настройками приложения
 final class SettingsViewModel: ObservableObject {
         
-    /// Частота обновления в минутах (сохраняется в UserDefaults)
+    /// Частота обновления в минутах (сохраняется через SettingsService)
     @Published var refreshInterval: Int {
         didSet {
-            UserDefaults.standard.set(refreshInterval, forKey: "refreshInterval")
+            settingsService.refreshInterval = refreshInterval
         }
     }
     
     /// Состояние очистки кэша
     @Published var cacheSize: String = "0 MB"
         
-    private let realmService: RealmService
+    private let settingsService: SettingsServiceProtocol
         
-    init(realmService: RealmService = RealmService()) {
-        self.realmService = realmService
-        // Загружаем интервал из настроек (по умолчанию 30 мин)
-        self.refreshInterval = UserDefaults.standard.integer(forKey: "refreshInterval")
-        if self.refreshInterval == 0 { self.refreshInterval = 30 }
+    init(settingsService: SettingsServiceProtocol) {
+        self.settingsService = settingsService
+        // Загружаем интервал из настроек
+        self.refreshInterval = settingsService.refreshInterval
         
         updateCacheSize()
     }

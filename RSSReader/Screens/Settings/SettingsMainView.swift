@@ -11,13 +11,17 @@ import SwiftUI
 struct SettingsMainView: View {
     
     @EnvironmentObject private var appRouter: AppRouter
-    @StateObject private var viewModel = SettingsViewModel()
+    @StateObject private var viewModel: SettingsViewModel
     
     /// Состояние для выбора интервала
     @State private var showIntervalPicker = false
     
     /// Состояние для подтверждения очистки кэша
     @State private var showClearCacheAlert = false
+    
+    init(viewModel: SettingsViewModel) {
+        _viewModel = StateObject(wrappedValue: viewModel)
+    }
     
     var body: some View {
         List {
@@ -99,7 +103,7 @@ struct SettingsMainView: View {
 
 #Preview {
     NavigationStack {
-        SettingsMainView()
+        SettingsMainView(viewModel: DependencyContainer().makeSettingsViewModel())
             .environmentObject(AppRouter())
     }
 }

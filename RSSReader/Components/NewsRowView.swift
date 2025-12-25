@@ -11,15 +11,11 @@ import SwiftUI
 /// Поддерживает два режима отображения данных (обычный и подробный)
 struct NewsRowView: View {
     
-    let newsItem: NewsItem
+    let newsItem: NewsArticle
     let displayMode: DisplayMode
-    
-    // MARK: - Constants
-    
+        
     private let imageSize = CGSize(width: 80, height: 80)
-    
-    // MARK: - Body
-    
+        
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // Картинка
@@ -46,8 +42,8 @@ struct NewsRowView: View {
                 }
                 
                 // Описание (только в extended режиме)
-                if displayMode == .extended && !newsItem.descriptionText.isEmpty {
-                    Text(newsItem.descriptionText)
+                if displayMode == .extended && !newsItem.description.isEmpty {
+                    Text(newsItem.description)
                         .font(.system(size: 13))
                         .foregroundStyle(newsItem.isRead ? .gray : .secondary)
                         .lineLimit(4)
@@ -61,10 +57,10 @@ struct NewsRowView: View {
 }
 
 #Preview("Regular") {
-    let item = NewsItem(
+    let item = NewsArticle(
         id: "1",
         title: "Заголовок новости достаточно длинный для проверки",
-        descriptionText: "Краткое описание новости для отображения в расширенном режиме",
+        description: "Краткое описание новости для отображения в расширенном режиме",
         imageURL: nil,
         link: "https://example.com",
         pubDate: Date().addingTimeInterval(-3600),
@@ -76,10 +72,10 @@ struct NewsRowView: View {
 }
 
 #Preview("Extended") {
-    let item = NewsItem(
+    let item = NewsArticle(
         id: "1",
         title: "Заголовок новости",
-        descriptionText: "Краткое описание новости для отображения в расширенном режиме. Это многострочный текст.",
+        description: "Краткое описание новости для отображения в расширенном режиме. Это многострочный текст.",
         imageURL: nil,
         link: "https://example.com",
         pubDate: Date().addingTimeInterval(-7200),

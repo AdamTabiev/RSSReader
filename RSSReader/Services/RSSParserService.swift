@@ -7,13 +7,11 @@
 
 import Foundation
 
-// MARK: - RSS Parser Service
-
 /// Универсальный сервис для парсинга XML-структуры RSS-лент
 /// Позволяет извлекать заголовки, описание, ссылки и картинки из различных форматов RSS
 
 //   NSObject, Потому что XMLParserDelegate требует этого (это старый API из времён Objective-C)
-final class RSSParserService: NSObject {
+final class RSSParserService: NSObject, RSSParserProtocol {
     
     // ХРАНИЛИЩЕ ДАННЫХ во время парсинга:
     
@@ -293,4 +291,19 @@ struct ParsedNewsItem {
             sourceName: sourceName
         )
     }
+    
+    /// Конвертация в чистую доменную модель
+    func toDomainModel() -> NewsArticle {
+        NewsArticle(
+            id: link,
+            title: title,
+            description: descriptionText,
+            imageURL: imageURL,
+            link: link,
+            pubDate: pubDate ?? Date(),
+            sourceName: sourceName,
+            isRead: false
+        )
+    }
 }
+

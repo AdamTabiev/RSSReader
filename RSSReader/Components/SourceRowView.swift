@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Source Row View
-
 /// Ячейка источника в списке источников
 struct SourceRowView: View {
     

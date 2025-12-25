@@ -36,3 +36,28 @@ final class RSSSource: Object, Identifiable {
     }
     
 }
+
+// MARK: - Domain Mapping
+
+extension RSSSource {
+    /// Конвертация Realm модели → Domain модель
+    func toDomainModel() -> FeedSource {
+        FeedSource(
+            id: self.id,
+            name: self.name,
+            url: self.url,
+            isEnabled: self.isEnabled,
+            dateAdded: self.dateAdded
+        )
+    }
+    
+    /// Конвертация Domain модели → Realm модель
+    static func fromDomain(_ source: FeedSource) -> RSSSource {
+        let realmSource = RSSSource(name: source.name, url: source.url)
+        realmSource.id = source.id
+        realmSource.isEnabled = source.isEnabled
+        realmSource.dateAdded = source.dateAdded
+        return realmSource
+    }
+}
+
